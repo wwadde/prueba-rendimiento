@@ -3,9 +3,9 @@ spring:
     name: webflux
   r2dbc:
 #    local
-    url: r2dbc:postgresql://localhost:15432/pruebarendimiento
+#    url: r2dbc:postgresql://localhost:15432/pruebarendimiento
 #    docker
-#    url: r2dbc:postgresql://postgres:5432/pruebarendimiento
+    url: r2dbc:postgresql://postgres:5432/pruebarendimiento
     username: postgres
     password: admin
 

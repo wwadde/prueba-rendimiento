@@ -3,9 +3,9 @@ spring:
     name: tomcat
   datasource:
 #    ejecución local
-    url: jdbc:postgresql://localhost:15432/pruebarendimiento
+#    url: jdbc:postgresql://localhost:15432/pruebarendimiento
 #    ejecución contenedor
-#    url: jdbc:postgresql://postgres:5432/pruebarendimiento
+    url: jdbc:postgresql://postgres:5432/pruebarendimiento
     username: postgres
     password: admin
 
