@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: tomcat
+  datasource:
+#    ejecución local
+    url: jdbc:postgresql://localhost:15432/pruebarendimiento
+#    ejecución contenedor
+#    url: jdbc:postgresql://postgres:5432/pruebarendimiento
+    username: postgres
+    password: admin
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+
+  threads:
+    virtual:
+      enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: never
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+
