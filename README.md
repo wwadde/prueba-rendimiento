@@ -9,66 +9,15 @@ Comparar rendimiento entre Tomcat (Spring MVC) y WebFlux con endpoints REST equi
 - Python 3.10+
 
 ## Configuracion rapida
-1) Levanta PostgreSQL + Prometheus + Grafana:
+1) Levanta PostgreSQL + Prometheus + Grafana + Apps:
 ```
 docker compose up -d
 ```
 
 
-4) Ejecuta las apps:
-```
-cd tomcat
-.\gradlew bootRun
-```
+## Carga de los datos a PostgreSQL:
+- El script carga los esquemas y la data de pagila y descarga el dataset CSV de crímenes
 
-En otra terminal:
-```
-cd webflux
-.\gradlew bootRun
-```
-
-## Estructura de paquetes (interna)
-- `tomcat/src/main/java/com/william/tomcat/`
-  - `controller/`, `service/`, `repository/`, `entity/`, `dto/`, `exception/`
-- `webflux/src/main/java/com/william/webflux/`
-  - `controller/`, `service/`, `dto/`, `exception/`
-
-## Endpoints
-Todos los endpoints son iguales en ambas apps.
-- `GET /api/v1/datasets`
-- `GET /api/v1/datasets/{dataset}/count`
-- `GET /api/v1/datasets/{dataset}/records?limit=100&offset=0`
-- `GET /api/v1/datasets/{dataset}/columns`
-
-En Tomcat puedes elegir el modo de acceso con `mode=jdbc|jpa` (por defecto `jdbc`):
-- `GET /api/v1/datasets?mode=jpa`
-- `GET /api/v1/datasets/{dataset}/records?limit=100&offset=0&mode=jpa`
-
-Datasets disponibles (se listan desde la tabla `dataset_metadata` despues de cargar los CSV):
-- `crime_data_from_2020_to_2024`
-
-Endpoints Pagila:
-- `GET /api/v1/pagila/films?limit=100&offset=0`
-- `GET /api/v1/pagila/films/top-rentals?limit=50`
-- `GET /api/v1/pagila/customers/top-payments?limit=50`
-- `GET /api/v1/pagila/films/{filmId}/actors`
-
-## Metricas
-- Tomcat: `http://localhost:8080/actuator/prometheus`
-- WebFlux: `http://localhost:8081/actuator/prometheus`
-- Prometheus: `http://localhost:9090`
-- Grafana: `http://localhost:3000` (admin/admin)
-
-
-
-
-Pagila (carga manual opcional):
-- El script `scripts/load_csvs.py` ya carga `pagila-schema.sql` y `pagila-data.sql` usando `docker exec`.
-- Si tu contenedor no se llama `perf_postgres`, usa `--container <nombre>`.
-- Para omitir pagila en una corrida, usa `--skip-pagila`.
-
-Fuente: https://github.com/devrimgunduz/pagila
-Descarga dataset csv: https://data.lacity.org/api/views/2nrs-mtv8/rows.csv?accessType=DOWNLOAD
 ```
 python -m venv .venv
 ```
@@ -81,6 +30,49 @@ python -m pip install -r requirements.txt
 ```
 python load_data.py   
 ```
+Fuente: https://github.com/devrimgunduz/pagila
+Descarga dataset csv: https://data.lacity.org/api/views/2nrs-mtv8/rows.csv?accessType=DOWNLOAD
+
+## Endpoints
+
+Los mismos endpoints están disponibles en ambas implementaciones:
+
+En Tomcat puedes elegir el modo de acceso con `mode=jdbc|jpa` (por defecto `jdbc`):
+
+- **Spring Boot MVC (Tomcat):** `http://localhost:8080`
+- **Spring WebFlux (Netty):** `http://localhost:8081`
+
+#### Pagila
+
+| Método | Endpoint | Descripción |
+|---------|----------|-------------|
+| GET | `/pagila/films` | Listar películas |
+| GET | `/pagila/films/{filmId}/actors` | Obtener los actores de una película |
+| GET | `/pagila/films/top-rentals` | Obtener el top de películas más rentadas |
+| GET | `/pagila/customers/top-payments` | Obtener los clientes con mayor cantidad de pagos |
+
+#### Crime Data
+
+| Método | Endpoint | Descripción |
+|---------|----------|-------------|
+| GET | `/crimes` | Obtener la lista de crímenes |
+| GET | `/crimes/count` | Obtener el conteo de crímenes |
 
 
-http://localhost:8080/swagger-ui/index.html
+
+
+- http://localhost:8080/swagger-ui/index.html
+- http://localhost:8081/swagger-ui/index.html
+
+## Imágenes de ejecución
+Al endpoint de pagila /films?limit=100&offset=0
+
+<p align="center">
+  <img src="assets/db.png" width="48%">
+  <img src="assets/http.png" width="48%">
+</p>
+
+<p align="center">
+  <img src="assets/cpu.png" width="48%">
+  <img src="assets/console.png" width="48%">
+</p>
